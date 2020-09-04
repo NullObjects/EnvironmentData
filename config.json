@@ -1,0 +1,13 @@
+{
+    "version": "0.1.0",
+    "connections": [
+        {
+            "host": "",
+            "database": "",
+            "user": "",
+            "password": ""
+        }
+    ],
+    "connectionSelect": "0",
+    "TimerInterval": "60"
+}
