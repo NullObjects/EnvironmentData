@@ -4,14 +4,14 @@ import datetime
 
 
 class DeviceStatus(object):
-    '''
+    """
         设备状态
-    '''
+    """
 
     def __init__(self):
-        '''
+        """
             初始化设备状态
-        '''
+        """
         self.Time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.CPUTemperature = 0
         self.CPUOccupancyRate = 0
@@ -20,9 +20,9 @@ class DeviceStatus(object):
         self.HDDOccupancyRate = 0
 
     def Refresh(self):
-        '''
+        """
             刷新设备状态
-        '''
+        """
         self.Time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         # 查看CPU温度
         file = open("/sys/class/thermal/thermal_zone0/temp")
@@ -52,35 +52,35 @@ class DeviceStatus(object):
             self.SDCardOccupancyRate, self.HDDOccupancyRate, self.Time))
 
     def _getRAMinfo(self):
-        '''
+        """
             Return RAM information (unit=kb) in a list
             Index 0: total RAM
             Index 1: used RAM
             Index 2: free RAM
-        '''
+        """
         p = os.popen('free')
         i = 0
         while 1:
             i = i + 1
             line = p.readline()
             if i == 2:
-                return(line.split()[1:4])
+                return line.split()[1:4]
 
     def _getDiskSpace(self, path):
-        '''
+        """
             Return information about disk space as a list (unit included)
             Index 0: total disk space
             Index 1: used disk space
             Index 2: remaining disk space
             Index 3: percentage of disk used
-        '''
+        """
         p = os.popen("df -h " + path)
         i = 0
         while 1:
             i = i + 1
             line = p.readline()
             if i == 2:
-                return(line.split()[1:5])
+                return line.split()[1:5]
 
 
 if __name__ == '__main__':

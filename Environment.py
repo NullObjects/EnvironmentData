@@ -4,14 +4,14 @@ import datetime
 
 
 class Environment(object):
-    '''
+    """
         环境(温湿度)传感器
-    '''
+    """
 
     def __init__(self, gpio):
-        '''
+        """
             初始化传感器
-        '''
+        """
         self.Time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.Temperature = 0
         self.Humidity = 0
@@ -20,9 +20,9 @@ class Environment(object):
         self._gpio = gpio
 
     def Refresh(self):
-        '''
+        """
             刷新传感器数据
-        '''
+        """
         self.Time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         # 获取传感器数据
         humidity, temperature = Adafruit_DHT.read_retry(

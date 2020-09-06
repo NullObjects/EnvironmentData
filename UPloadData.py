@@ -7,15 +7,15 @@ import pymysql
 
 
 class UPloadData(object):
-    '''
+    """
         上传数据
-    '''
+    """
 
     def __init__(self, interval):
-        '''
+        """
             初始化上传
-        '''
-        if(self._DBInit() == False):
+        """
+        if not self._DBInit():
             print('数据库连接失败，请检查连接')
             return
         self.Sensor = Environment.Environment(17)
@@ -26,18 +26,18 @@ class UPloadData(object):
             time.sleep(interval)
 
     def _DBInit(self):
-        '''
+        """
         数据库连接初始化
-        '''
-       # 新建连接
-        with open('config.json') as configJson:
-            config = json.load(configJson)
-        dbConfig = config['connections'][int(config['connectionSelect'])]
+        """
+        # 新建连接
+        with open('config.json') as _configJson:
+            _config = json.load(_configJson)
+        _dbConfig = _config['connections'][int(_config['connectionSelect'])]
         try:
-            self._connection = pymysql.connect(host=dbConfig['host'],
-                                               database=dbConfig['database'],
-                                               user=dbConfig['user'],
-                                               password=dbConfig['password'])
+            self._connection = pymysql.connect(host=_dbConfig['host'],
+                                               database=_dbConfig['database'],
+                                               user=_dbConfig['user'],
+                                               password=_dbConfig['password'])
             return True
         # 连接字典错误
         except Exception as ex:
@@ -45,16 +45,17 @@ class UPloadData(object):
             return False
 
     def _UPload(self):
-        '''
+        """
             数据上传数据库
-        '''
+        """
         self.Sensor.Refresh()
         self.Device.Refresh()
         cursor = self._connection.cursor()
         try:
-            if(self.Sensor.Temperature != 0 and self.Sensor.Humidity != 0):
-                cursor.execute("INSERT INTO Environment(Temperature, Humidity, RecordTime) VALUES({0}, {1}, '{2}')".format(
-                    self.Sensor.Temperature, self.Sensor.Humidity, self.Sensor.Time))
+            if self.Sensor.Temperature != 0 and self.Sensor.Humidity != 0:
+                cursor.execute(
+                    "INSERT INTO Environment(Temperature, Humidity, RecordTime) VALUES({0}, {1}, '{2}')".format(
+                        self.Sensor.Temperature, self.Sensor.Humidity, self.Sensor.Time))
             cursor.execute(
                 "INSERT INTO DeviceStatus(CPUTemperature, CPUOccupancyRate, RAMOccupancyRate, SDCardOccupancyRate, HDDOccupancyRate, RecordTime) VALUES({0}, {1}, {2}, {3}, {4}, '{5}')".format(
                     self.Device.CPUTemperature,
