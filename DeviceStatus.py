@@ -7,7 +7,6 @@ class DeviceStatus(object):
     """
         设备状态
     """
-
     def __init__(self):
         """
             初始化设备状态
@@ -19,32 +18,54 @@ class DeviceStatus(object):
         self.SDCardOccupancyRate = 0
         self.HDDOccupancyRate = 0
 
-    def Refresh(self):
+    def refresh(self):
         """
             刷新设备状态
         """
         self.Time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        # 查看CPU温度
-        file = open("/sys/class/thermal/thermal_zone0/temp")
-        self.CPUTemperature = round(float(file.read()) / 1000, 2)
-        file.close()
+        try:
+            # 查看CPU温度
+            file = open("/sys/class/thermal/thermal_zone0/temp")
+            self.CPUTemperature = round(float(file.read()) / 1000, 2)
+            file.close()
+        except Exception as ex:
+            print("CPUTemperature Error:\n" + str(ex))
+            self.CPUTemperature = -1
 
-        # 查看CPU占用率
-        self.CPUOccupancyRate = round(float(
-            os.popen("top -n1 | awk '/Cpu\(s\):/ {print $2}'").readline().strip()), 2)
+        try:
+            # 查看CPU占用率
+            self.CPUOccupancyRate = round(
+                float(
+                    os.popen("top -b -n1 | awk '/Cpu\(s\):/ {print $2}'").
+                    readline().strip()), 2)
+        except Exception as ex:
+            print("CPUOccupancyRate Error:\n" + str(ex))
+            self.CPUOccupancyRate = -1
 
-        # 查看内存占用率
-        ram_stats = self._getRAMinfo()
-        self.RAMOccupancyRate = round(
-            int(ram_stats[1]) / int(ram_stats[0]) * 100, 2)
+        try:
+            # 查看内存占用率
+            ram_stats = self._getRAMinfo()
+            self.RAMOccupancyRate = round(
+                int(ram_stats[1]) / int(ram_stats[0]) * 100, 2)
+        except Exception as ex:
+            print("RAMOccupancyRate Error:\n" + str(ex))
+            self.RAMOccupancyRate = -1
 
-        # 查看SD卡占用率
-        sd_stats = self._getDiskSpace('/')
-        self.SDCardOccupancyRate = float(sd_stats[3].replace('%', ''))
+        try:
+            # 查看SD卡占用率
+            sd_stats = self._getDiskSpace('/')
+            self.SDCardOccupancyRate = float(sd_stats[3].replace('%', ''))
+        except Exception as ex:
+            print("SDCardOccupancyRate Error:\n" + str(ex))
+            self.SDCardOccupancyRate = -1
 
-        # 查看HDD占用率
-        disk_stats = self._getDiskSpace('/media/ubuntu/Data/')
-        self.HDDOccupancyRate = float(disk_stats[3].replace('%', ''))
+        try:
+            # 查看HDD占用率
+            disk_stats = self._getDiskSpace('/media/ubuntu/Data/')
+            self.HDDOccupancyRate = float(disk_stats[3].replace('%', ''))
+        except Exception as ex:
+            print("HDDOccupancyRate Error:\n" + str(ex))
+            self.HDDOccupancyRate = -1
 
         print('CPU温度={0}*C  CPU占用率={1}%  内存占用率={2}%'.format(
             self.CPUTemperature, self.CPUOccupancyRate, self.RAMOccupancyRate))
@@ -84,4 +105,4 @@ class DeviceStatus(object):
 
 
 if __name__ == '__main__':
-    DeviceStatus().Refresh()
+    DeviceStatus().refresh()

@@ -8,5 +8,5 @@
 ###快捷启动
 ```
 .zshrc添加
-alias env_data="cd ~/source/Python/EnvironmentData/ && sudo python3 UPloadData.py"
+alias env_data="cd ~/source/Python/EnvironmentData/ && sudo python3 UploadData.py"
 ```

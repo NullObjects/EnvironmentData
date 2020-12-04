@@ -6,26 +6,25 @@ import time
 import pymysql
 
 
-class UPloadData(object):
+class UploadData(object):
     """
         上传数据
     """
-
     def __init__(self, interval):
         """
             初始化上传
         """
-        if not self._DBInit():
+        if not self._dbInit():
             print('数据库连接失败，请检查连接')
             return
         self.Sensor = Environment.Environment(17)
         self.Device = DeviceStatus.DeviceStatus()
         while True:
             print('>>>  Start  <<<')
-            self._UPload()
+            self._upload()
             time.sleep(interval)
 
-    def _DBInit(self):
+    def _dbInit(self):
         """
         数据库连接初始化
         """
@@ -44,29 +43,29 @@ class UPloadData(object):
             print('Exception:\n' + str(ex))
             return False
 
-    def _UPload(self):
+    def _upload(self):
         """
             数据上传数据库
         """
-        self.Sensor.Refresh()
-        self.Device.Refresh()
+        self.Sensor.refresh()
+        self.Device.refresh()
         cursor = self._connection.cursor()
         try:
             if self.Sensor.Temperature != 0 and self.Sensor.Humidity != 0:
                 cursor.execute(
-                    "INSERT INTO Environment(Temperature, Humidity, RecordTime) VALUES({0}, {1}, '{2}')".format(
-                        self.Sensor.Temperature, self.Sensor.Humidity, self.Sensor.Time))
+                    "INSERT INTO Environment(Temperature, Humidity, RecordTime) VALUES({0}, {1}, '{2}')"
+                    .format(self.Sensor.Temperature, self.Sensor.Humidity,
+                            self.Sensor.Time))
             cursor.execute(
-                "INSERT INTO DeviceStatus(CPUTemperature, CPUOccupancyRate, RAMOccupancyRate, SDCardOccupancyRate, HDDOccupancyRate, RecordTime) VALUES({0}, {1}, {2}, {3}, {4}, '{5}')".format(
-                    self.Device.CPUTemperature,
-                    self.Device.CPUOccupancyRate,
-                    self.Device.RAMOccupancyRate,
-                    self.Device.SDCardOccupancyRate,
-                    self.Device.HDDOccupancyRate,
-                    self.Device.Time))
+                "INSERT INTO DeviceStatus(CPUTemperature, CPUOccupancyRate, RAMOccupancyRate, SDCardOccupancyRate, HDDOccupancyRate, RecordTime) VALUES({0}, {1}, {2}, {3}, {4}, '{5}')"
+                .format(self.Device.CPUTemperature,
+                        self.Device.CPUOccupancyRate,
+                        self.Device.RAMOccupancyRate,
+                        self.Device.SDCardOccupancyRate,
+                        self.Device.HDDOccupancyRate, self.Device.Time))
             self._connection.commit()
         except Exception as ex:
-            print("UPload Error:\n" + str(ex))
+            print("Upload Error:\n" + str(ex))
             self._connection.rollback()
         cursor.close()
 
@@ -74,4 +73,4 @@ class UPloadData(object):
 if __name__ == "__main__":
     with open('config.json') as configJson:
         config = json.load(configJson)
-    UPloadData(int(config['TimerInterval']))
+    UploadData(int(config['TimerInterval']))
